@@ -6,7 +6,7 @@ use bevy_ase::{
     loader::{self, Loader},
 };
 
-use bevy_inspector_egui::WorldInspectorPlugin;
+//use bevy_inspector_egui::WorldInspectorPlugin;
 use bevy_rapier2d::prelude::*;
 pub use body_part::{BodyPart, BodyPartTextures};
 pub use game::Game;
@@ -47,7 +47,7 @@ fn main() {
             gravity: Vector::new(0.0, -10.0),
             ..Default::default()
         })
-        .add_plugin(WorldInspectorPlugin::new())
+        //.add_plugin(WorldInspectorPlugin::new())
         .add_state(AppState::Loading)
         .add_state_to_stage(CoreStage::PostUpdate, AppState::Loading)
         .add_system_set(
@@ -77,7 +77,7 @@ fn main() {
                 .with_system(Game::update.label("Game::update"))
                 .with_system(MouseCursor::update)
                 .with_system(ReadyToJump::update)
-                .with_system(SlimeBall::update)
+                .with_system(SlimeBall::update.after("SpawnSlimeBall::handle_event"))
                 .with_system(SlimeBall::on_contact_stopped)
                 .with_system(SlimeBall::on_contact_started.label("SlimeBall::on_contact_started"))
                 .with_system(
@@ -86,15 +86,14 @@ fn main() {
                         .after("SlimeBall::on_contact_started"),
                 )
                 .with_system(TargetStatus::changed.label("TargetStatus::changed"))
-                .with_system(SpawnSlimeBall::handle_event)
-                .with_system(
-                    util::DespawnEntity::handle_event.after("SpawnSlimeBall::on_contact_started"),
-                )
+                .with_system(SpawnSlimeBall::handle_event.label("SpawnSlimeBall::handle_event"))
                 .with_system(Score::on_player_damaged.after("SlimeBall::on_contact_started"))
                 .with_system(Player::on_damaged.after("SlimeBall::on_contact_started"))
                 .with_system(Player::on_phase)
                 .with_system(BodyPart::win_check.before("Game::update"))
                 .with_system(Score::on_end),
+        )        .add_system_set(
+        SystemSet::on_update(AppState::Ready).before("ready_update").with_system(util::DespawnEntity::handle_event)
         )
         .add_system_set_to_stage(
             CoreStage::PostUpdate,

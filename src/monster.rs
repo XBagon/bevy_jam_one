@@ -1,4 +1,4 @@
-use crate::{util, SpawnSlimeBall};
+use crate::{util, SpawnSlimeBall, Score};
 use benimator::SpriteSheetAnimation;
 use bevy::prelude::*;
 use bevy_ase::asset::{Animation, AseFileMap};
@@ -46,7 +46,7 @@ impl Monster {
         commands
             .spawn_bundle(SpriteSheetBundle {
                 texture_atlas: idle_animation.texture_atlas.clone(),
-                transform: Transform::from_xyz(-145., 111., 0.).with_scale(Vec3::splat(0.6)),
+                transform: Transform::from_xyz(-165., 60., 0.).with_scale(Vec3::splat(1.0)),
                 ..Default::default()
             })
             .insert(idle_animation.sprite_sheet_animation.clone())
@@ -67,6 +67,7 @@ impl Monster {
         )>,
         removed_play: RemovedComponents<benimator::Play>,
         mut ev_spawn_slime_ball: EventWriter<SpawnSlimeBall>,
+        q_score: Query<&Score>,
     ) {
         for e in removed_play.iter() {
             if let Ok((mut monster, mut texture_atlas, mut sprite_sheet_animation)) =
@@ -86,7 +87,11 @@ impl Monster {
                         monster.phase = Phase::Shoot;
                     }
                     Phase::Shoot => {
-                        ev_spawn_slime_ball.send(SpawnSlimeBall);
+                        ev_spawn_slime_ball.send(SpawnSlimeBall {
+                            position: None,
+                            velocity: None,
+                            health: 100 + q_score.single().0 as i32 * q_score.single().0 as i32
+                        });
                         monster
                             .idle_animation
                             .apply_animation(&mut texture_atlas, &mut sprite_sheet_animation);

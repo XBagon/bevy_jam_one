@@ -2,7 +2,7 @@ use crate::{game, PlayerDamaged, HALF_HEIGHT, HALF_WIDTH};
 use bevy::prelude::*;
 
 #[derive(Component)]
-pub struct Score(u32);
+pub struct Score(pub u32);
 
 impl Score {
     pub fn spawn(mut commands: Commands, asset_server: Res<AssetServer>) {
