@@ -12,7 +12,9 @@ pub struct MouseCursor {
 impl MouseCursor {
     pub fn spawn(mut commands: Commands, ase_file_map: Res<AseFileMap>) {
         //commands.spawn().insert(Game);
-        let target_assets = ase_file_map.get(Path::new("sprites/target.aseprite")).unwrap();
+        let target_assets = ase_file_map
+            .get(Path::new("sprites/target.aseprite"))
+            .unwrap();
         let cursor = MouseCursor {
             active_sprite: target_assets.texture(0).unwrap().clone(),
             inactive_sprite: target_assets.texture(1).unwrap().clone(),

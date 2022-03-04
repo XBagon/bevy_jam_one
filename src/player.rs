@@ -1,10 +1,10 @@
-use crate::{game, PHYSICS_SCALE, PlayerDamaged, util};
+use crate::nalgebra::Vector2;
+use crate::{game, util, PlayerDamaged, PHYSICS_SCALE};
+use benimator::SpriteSheetAnimation;
 use bevy::prelude::*;
 use bevy_ase::asset::{Animation, AseFileMap};
 use bevy_rapier2d::prelude::*;
 use std::path::Path;
-use benimator::SpriteSheetAnimation;
-use crate::nalgebra::Vector2;
 
 #[derive(Component)]
 pub struct Player {
@@ -19,20 +19,18 @@ impl Player {
         animations: Res<Assets<Animation>>,
         mut sprite_sheet_animations: ResMut<Assets<benimator::SpriteSheetAnimation>>,
     ) {
-        let asset_map = ase_file_map.get(Path::new("sprites/person_player.aseprite")).unwrap();
+        let asset_map = ase_file_map
+            .get(Path::new("sprites/person_player.aseprite"))
+            .unwrap();
 
         let (texture_atlas, anim) = util::Animation::get_components(&animations, asset_map, "Idle");
-        let idle_animation = util::Animation::from_components(
-            texture_atlas,
-            sprite_sheet_animations.add(anim),
-        );
+        let idle_animation =
+            util::Animation::from_components(texture_atlas, sprite_sheet_animations.add(anim));
 
         let (texture_atlas, anim) =
             util::Animation::get_components(&animations, asset_map, "Slimed");
-        let slimed_animation = util::Animation::from_components(
-            texture_atlas,
-            sprite_sheet_animations.add(anim),
-        );
+        let slimed_animation =
+            util::Animation::from_components(texture_atlas, sprite_sheet_animations.add(anim));
 
         commands
             .spawn_bundle(SpriteSheetBundle {
@@ -66,22 +64,48 @@ impl Player {
             .insert(RigidBodyPositionSync::Discrete);
     }
 
-    pub fn on_damaged(mut ev_player_damaged: EventReader<PlayerDamaged>, mut q_player: Query<(&Player, &mut Handle<TextureAtlas>, &mut Handle<SpriteSheetAnimation>)>) {
+    pub fn on_damaged(
+        mut ev_player_damaged: EventReader<PlayerDamaged>,
+        mut q_player: Query<(
+            &Player,
+            &mut Handle<TextureAtlas>,
+            &mut Handle<SpriteSheetAnimation>,
+        )>,
+    ) {
         for _ in ev_player_damaged.iter() {
             info!("OUCH!");
             let (player, mut texture_atlas, mut sprite_sheet_animation) = q_player.single_mut();
-            player.slimed_animation.apply_animation(&mut texture_atlas, &mut sprite_sheet_animation);
+            player
+                .slimed_animation
+                .apply_animation(&mut texture_atlas, &mut sprite_sheet_animation);
         }
     }
 
-    pub fn on_phase(mut ev_phase: EventReader<game::Phase>, mut q_player: Query<(&Player, &mut RigidBodyPositionComponent, &mut RigidBodyVelocityComponent, &mut Handle<TextureAtlas>, &mut Handle<SpriteSheetAnimation>)>) {
+    pub fn on_phase(
+        mut ev_phase: EventReader<game::Phase>,
+        mut q_player: Query<(
+            &Player,
+            &mut RigidBodyPositionComponent,
+            &mut RigidBodyVelocityComponent,
+            &mut Handle<TextureAtlas>,
+            &mut Handle<SpriteSheetAnimation>,
+        )>,
+    ) {
         for ev in ev_phase.iter() {
             //TODO: disable animation
             match ev {
                 game::Phase::TransDead => {
                     info!("Reset Player");
-                    let (player, mut rigid_body_position, mut rigid_body_velocity, mut texture_atlas, mut sprite_sheet_animation) = q_player.single_mut();
-                    player.idle_animation.apply_animation(&mut texture_atlas, &mut sprite_sheet_animation);
+                    let (
+                        player,
+                        mut rigid_body_position,
+                        mut rigid_body_velocity,
+                        mut texture_atlas,
+                        mut sprite_sheet_animation,
+                    ) = q_player.single_mut();
+                    player
+                        .idle_animation
+                        .apply_animation(&mut texture_atlas, &mut sprite_sheet_animation);
                     rigid_body_position.position.translation.y = -10.5;
                     rigid_body_position.position.rotation = Rotation::new(0.);
                     rigid_body_velocity.linvel = Vector2::repeat(0.);

@@ -15,9 +15,9 @@ pub use mouse_cursor::MouseCursor;
 pub use player::Player;
 pub use player_damaged::PlayerDamaged;
 pub use ready_to_jump::ReadyToJump;
+pub use score::Score;
 pub use slime_ball::{SlimeBall, SlimeBallBundle, SpawnSlimeBall};
 pub use target_status::TargetStatus;
-pub use score::Score;
 
 mod body_part;
 mod game;
@@ -51,7 +51,9 @@ fn main() {
         .add_state(AppState::Loading)
         .add_state_to_stage(CoreStage::PostUpdate, AppState::Loading)
         .add_system_set(
-            SystemSet::on_enter(AppState::Loading).label("loading_enter").with_system(load_sprites),
+            SystemSet::on_enter(AppState::Loading)
+                .label("loading_enter")
+                .with_system(load_sprites),
         )
         .add_system_set(
             SystemSet::on_update(AppState::Loading)
@@ -78,10 +80,16 @@ fn main() {
                 .with_system(SlimeBall::update)
                 .with_system(SlimeBall::on_contact_stopped)
                 .with_system(SlimeBall::on_contact_started.label("SlimeBall::on_contact_started"))
-                .with_system(PlayerDamaged::handle_event.before("TargetStatus::changed").after("SlimeBall::on_contact_started"))
+                .with_system(
+                    PlayerDamaged::handle_event
+                        .before("TargetStatus::changed")
+                        .after("SlimeBall::on_contact_started"),
+                )
                 .with_system(TargetStatus::changed.label("TargetStatus::changed"))
                 .with_system(SpawnSlimeBall::handle_event)
-                .with_system(util::DespawnEntity::handle_event.after("SpawnSlimeBall::on_contact_started"))
+                .with_system(
+                    util::DespawnEntity::handle_event.after("SpawnSlimeBall::on_contact_started"),
+                )
                 .with_system(Score::on_player_damaged.after("SlimeBall::on_contact_started"))
                 .with_system(Player::on_damaged.after("SlimeBall::on_contact_started"))
                 .with_system(Player::on_phase)

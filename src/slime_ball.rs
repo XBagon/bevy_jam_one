@@ -28,14 +28,22 @@ impl SpawnSlimeBall {
                 .insert_bundle(RigidBodyBundle {
                     position: Isometry::translation(0., HALF_HEIGHT * 1.2 / PHYSICS_SCALE).into(),
                     velocity: RigidBodyVelocity {
-                        linvel: Vector::new(rand.sin()*0.1, -0.1),
+                        linvel: Vector::new(rand.sin() * 0.1, -0.1),
                         ..Default::default()
-                    }.into(),
-                    ccd: RigidBodyCcd { ccd_enabled: true, ccd_thickness: 0., ccd_max_dist: 0.6, ..Default::default() }.into(), //TODO: FIX
+                    }
+                    .into(),
+                    ccd: RigidBodyCcd {
+                        ccd_enabled: true,
+                        ccd_thickness: 0.,
+                        ccd_max_dist: 0.6,
+                        ..Default::default()
+                    }
+                    .into(), //TODO: FIX
                     mass_properties: RigidBodyMassProps {
                         flags: RigidBodyMassPropsFlags::ROTATION_LOCKED,
                         ..Default::default()
-                    }.into(),
+                    }
+                    .into(),
                     ..Default::default()
                 })
                 .insert_bundle(ColliderBundle {
@@ -52,7 +60,8 @@ impl SpawnSlimeBall {
                         restitution: 1.0,
                         friction_combine_rule: CoefficientCombineRule::Min,
                         restitution_combine_rule: CoefficientCombineRule::Max,
-                    }.into(),
+                    }
+                    .into(),
                     ..Default::default()
                 })
                 .insert(RigidBodyPositionSync::Discrete);
@@ -129,9 +138,19 @@ impl SlimeBall {
         }
     }
 
-    pub fn update(mut q_slime_ball: Query<(&mut RigidBodyPositionComponent, &RigidBodyVelocityComponent), With<SlimeBall>>) {
+    pub fn update(
+        mut q_slime_ball: Query<
+            (&mut RigidBodyPositionComponent, &RigidBodyVelocityComponent),
+            With<SlimeBall>,
+        >,
+    ) {
         for (mut rigid_body_position, rigid_body_velocity) in q_slime_ball.iter_mut() {
-            rigid_body_position.position.rotation = Rotation::new(util::full_angle_between(&(rigid_body_velocity.linvel.component_mul(&Vector::new(-1. ,1.))), &Vector2::new(0.0, 1.0)));
+            rigid_body_position.position.rotation = Rotation::new(util::full_angle_between(
+                &(rigid_body_velocity
+                    .linvel
+                    .component_mul(&Vector::new(-1., 1.))),
+                &Vector2::new(0.0, 1.0),
+            ));
         }
     }
 }
@@ -152,7 +171,9 @@ impl SlimeBallBundle {
         animations: Res<Assets<Animation>>,
         mut sprite_sheet_animations: ResMut<Assets<benimator::SpriteSheetAnimation>>,
     ) {
-        let asset_map = ase_file_map.get(Path::new("sprites/slime_ball.aseprite")).unwrap();
+        let asset_map = ase_file_map
+            .get(Path::new("sprites/slime_ball.aseprite"))
+            .unwrap();
 
         let (texture_atlas, anim) = util::Animation::get_components(&animations, asset_map, "Idle");
         let idle_animation =
@@ -164,9 +185,7 @@ impl SlimeBallBundle {
                 transform: Transform::from_xyz(0., 0., 6.),
                 ..Default::default()
             },
-            slime_ball: SlimeBall {
-                health: 100,
-            },
+            slime_ball: SlimeBall { health: 100 },
             anim_handle: idle_animation.sprite_sheet_animation,
             play: benimator::Play,
         })

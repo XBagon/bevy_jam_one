@@ -26,7 +26,9 @@ impl Monster {
         animations: Res<Assets<Animation>>,
         mut sprite_sheet_animations: ResMut<Assets<benimator::SpriteSheetAnimation>>,
     ) {
-        let asset_map = ase_file_map.get(Path::new("sprites/monster.aseprite")).unwrap();
+        let asset_map = ase_file_map
+            .get(Path::new("sprites/monster.aseprite"))
+            .unwrap();
 
         let (texture_atlas, anim) = util::Animation::get_components(&animations, asset_map, "Idle");
         let idle_animation = util::Animation::from_components(

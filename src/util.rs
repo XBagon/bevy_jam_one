@@ -1,8 +1,8 @@
+use crate::nalgebra;
+use crate::nalgebra::Vector2;
 use benimator::SpriteSheetAnimation;
 use bevy::prelude::*;
 use bevy_ase::asset::AseAssetMap;
-use crate::nalgebra::Vector2;
-use crate::nalgebra;
 
 pub fn screen_to_world_pos(
     camera: &Camera,

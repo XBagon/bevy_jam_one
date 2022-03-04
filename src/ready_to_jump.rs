@@ -8,7 +8,11 @@ pub struct ReadyToJump;
 impl ReadyToJump {
     pub fn update(
         mut q_rb: Query<
-            (&mut RigidBodyVelocityComponent, &RigidBodyMassPropsComponent, &Transform),
+            (
+                &mut RigidBodyVelocityComponent,
+                &RigidBodyMassPropsComponent,
+                &Transform,
+            ),
             With<ReadyToJump>,
         >,
         buttons: Res<Input<MouseButton>>,

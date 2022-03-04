@@ -1,4 +1,6 @@
-use crate::{nalgebra::Isometry2, Monster, TargetStatus, HALF_HEIGHT, HALF_WIDTH, PHYSICS_SCALE, SlimeBall};
+use crate::{
+    nalgebra::Isometry2, Monster, SlimeBall, TargetStatus, HALF_HEIGHT, HALF_WIDTH, PHYSICS_SCALE,
+};
 use bevy::{
     input::{keyboard::KeyboardInput, ElementState},
     prelude::*,
@@ -37,7 +39,9 @@ pub struct Overlay {
 
 impl Game {
     pub fn setup(mut commands: Commands, ase_file_map: Res<AseFileMap>) {
-        let overlays_assets = ase_file_map.get(Path::new("sprites/overlays.aseprite")).unwrap();
+        let overlays_assets = ase_file_map
+            .get(Path::new("sprites/overlays.aseprite"))
+            .unwrap();
         let overlay = Overlay {
             press_start_overlay: overlays_assets.texture(0).unwrap().clone(),
             you_win_overlay: overlays_assets.texture(1).unwrap().clone(),
@@ -74,7 +78,7 @@ impl Game {
             .into(),
             flags: ColliderFlags {
                 solver_groups: InteractionGroups::new(1 << 0, !0),
-                collision_groups: InteractionGroups::new( 1 << 0, !(1 << 5)),
+                collision_groups: InteractionGroups::new(1 << 0, !(1 << 5)),
                 ..Default::default()
             }
             .into(),
@@ -90,7 +94,7 @@ impl Game {
             .into(),
             flags: ColliderFlags {
                 solver_groups: InteractionGroups::new(1 << 0, !0),
-                collision_groups: InteractionGroups::new( 1 << 0, !(1 << 5)),
+                collision_groups: InteractionGroups::new(1 << 0, !(1 << 5)),
                 ..Default::default()
             }
             .into(),
@@ -110,7 +114,7 @@ impl Game {
             .into(),
             flags: ColliderFlags {
                 solver_groups: InteractionGroups::new(1 << 0, !0),
-                collision_groups: InteractionGroups::new( 1 << 0, !(1 << 5)),
+                collision_groups: InteractionGroups::new(1 << 0, !(1 << 5)),
                 ..Default::default()
             }
             .into(),
@@ -130,7 +134,7 @@ impl Game {
             .into(),
             flags: ColliderFlags {
                 solver_groups: InteractionGroups::new(1 << 0, !0),
-                collision_groups: InteractionGroups::new( 1 << 0, !(1 << 5)),
+                collision_groups: InteractionGroups::new(1 << 0, !(1 << 5)),
                 ..Default::default()
             }
             .into(),
@@ -163,9 +167,7 @@ impl Game {
                 }
                 game.phase = Phase::Intro;
             }
-            Phase::Intro => {
-
-            }
+            Phase::Intro => {}
             Phase::TransDead => {
                 let (overlay, mut handle, mut visibility) = q_overlay.single_mut();
                 *handle = overlay.you_win_overlay.clone();
@@ -211,12 +213,14 @@ impl Game {
         }
     }
 
-    pub fn detect_round_over(mut game: ResMut<Game>, removed_slime_ball: RemovedComponents<SlimeBall>, q_slime_ball: Query<(), With<SlimeBall>>) {
+    pub fn detect_round_over(
+        mut game: ResMut<Game>,
+        removed_slime_ball: RemovedComponents<SlimeBall>,
+        q_slime_ball: Query<(), With<SlimeBall>>,
+    ) {
         if removed_slime_ball.iter().next().is_some() && q_slime_ball.iter().next().is_none() {
             match game.phase {
-                Phase::Intro | Phase::Main => {
-                    game.phase = Phase::TransDead
-                }
+                Phase::Intro | Phase::Main => game.phase = Phase::TransDead,
                 _ => {}
             }
         }

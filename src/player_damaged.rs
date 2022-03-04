@@ -23,11 +23,7 @@ impl PlayerDamaged {
                     ..Default::default()
                 })
                 .insert_bundle(RigidBodyBundle {
-                    position: Isometry::new(
-                        ev.pos,
-                        rand,
-                    )
-                    .into(),
+                    position: Isometry::new(ev.pos, rand).into(),
                     velocity: RigidBodyVelocity {
                         linvel: ev.vel,
                         ..Default::default()
