@@ -1,5 +1,5 @@
 use crate::nalgebra::Vector2;
-use crate::{game, HALF_WIDTH, PHYSICS_SCALE};
+use crate::{game, HALF_HEIGHT, HALF_WIDTH, PHYSICS_SCALE};
 use bevy::prelude::*;
 use bevy_ase::asset::AseFileMap;
 use bevy_rapier2d::prelude::*;
@@ -40,7 +40,10 @@ impl BodyPart {
                     let collider_set = QueryPipelineColliderComponentsSet(&collider_query);
 
                     let ray = Ray::new(
-                        Point::new(-HALF_WIDTH / PHYSICS_SCALE, 0.),
+                        Point::new(
+                            -HALF_WIDTH / PHYSICS_SCALE,
+                            -HALF_HEIGHT / PHYSICS_SCALE + 1.,
+                        ),
                         Vector2::new(1.0, 0.0),
                     );
                     let max_toi = HALF_WIDTH * 2. / PHYSICS_SCALE;
@@ -55,6 +58,7 @@ impl BodyPart {
                         if let Ok(rigid_body_activation) = q_body_part.get(handle.entity()) {
                             dbg!(&rigid_body_activation.0);
                             if rigid_body_activation.sleeping {
+                                info!("aaa");
                                 ev_won.send(game::Won);
                             }
                         }

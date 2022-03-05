@@ -92,8 +92,11 @@ fn main() {
                 .with_system(Player::on_phase)
                 .with_system(BodyPart::win_check.before("Game::update"))
                 .with_system(Score::on_end),
-        )        .add_system_set(
-        SystemSet::on_update(AppState::Ready).before("ready_update").with_system(util::DespawnEntity::handle_event)
+        )
+        .add_system_set(
+            SystemSet::on_update(AppState::Ready)
+                .after("ready_update")
+                .with_system(util::DespawnEntity::handle_event),
         )
         .add_system_set_to_stage(
             CoreStage::PostUpdate,

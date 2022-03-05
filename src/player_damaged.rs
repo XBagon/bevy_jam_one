@@ -22,6 +22,7 @@ impl PlayerDamaged {
             let rand = (ev.pos.x * 1008. - ev.pos.y * 2502.) * std::f32::consts::PI;
             commands
                 .spawn_bundle(SpriteBundle {
+                    transform: Transform::from_xyz(0., 1000., 3.),
                     texture: body_part_textures.0[(rand as usize) % 6].clone(),
                     ..Default::default()
                 })
@@ -50,18 +51,19 @@ impl PlayerDamaged {
 
             let rigid_body_velocity = q_rigid_body_velocity.single();
             let angle = rigid_body_velocity.linvel.angle(&ev.vel);
-            let split_power = angle/std::f32::consts::PI * rigid_body_velocity.linvel.magnitude()/10.;
+            let split_power =
+                angle / std::f32::consts::PI * rigid_body_velocity.linvel.magnitude() / 10.;
             //split_power *= split_power;
             let new_health = split_power * ev.slime_ball_health as f32;
             dbg!(new_health);
             if new_health > 10. {
                 ev_spawn_slime_ball.send(SpawnSlimeBall {
-                    position: Some((ev.pos-(ev.vel).normalize()*2.0).into()),
+                    position: Some((ev.pos - (ev.vel).normalize() * 2.0).into()),
                     velocity: Some(-ev.vel),
                     health: new_health as i32,
                 });
                 ev_spawn_slime_ball.send(SpawnSlimeBall {
-                    position: Some((ev.pos-(ev.vel).normalize()*2.0).into()),
+                    position: Some((ev.pos - (ev.vel).normalize() * 2.0).into()),
                     velocity: Some(-ev.vel),
                     health: new_health as i32,
                 });

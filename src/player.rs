@@ -92,7 +92,6 @@ impl Player {
         )>,
     ) {
         for ev in ev_phase.iter() {
-            //TODO: disable animation
             match ev {
                 game::Phase::TransDead => {
                     info!("Reset Player");

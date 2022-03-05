@@ -1,4 +1,4 @@
-use crate::{util, SpawnSlimeBall, Score};
+use crate::{util, Score, SpawnSlimeBall};
 use benimator::SpriteSheetAnimation;
 use bevy::prelude::*;
 use bevy_ase::asset::{Animation, AseFileMap};
@@ -90,7 +90,7 @@ impl Monster {
                         ev_spawn_slime_ball.send(SpawnSlimeBall {
                             position: None,
                             velocity: None,
-                            health: 100 + q_score.single().0 as i32 * q_score.single().0 as i32
+                            health: 100 + q_score.single().0 as i32 * q_score.single().0 as i32,
                         });
                         monster
                             .idle_animation

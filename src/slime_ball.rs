@@ -1,10 +1,13 @@
-use crate::{nalgebra::Vector2, util, util::DespawnEntity, Player, PlayerDamaged, HALF_HEIGHT, PHYSICS_SCALE, HALF_WIDTH};
+use crate::nalgebra::{Isometry2, Point2};
+use crate::{
+    nalgebra::Vector2, util, util::DespawnEntity, Player, PlayerDamaged, HALF_HEIGHT, HALF_WIDTH,
+    PHYSICS_SCALE,
+};
 use benimator::SpriteSheetAnimation;
 use bevy::prelude::*;
 use bevy_ase::asset::{Animation, AseFileMap};
 use bevy_rapier2d::prelude::*;
 use std::path::Path;
-use crate::nalgebra::{Isometry2, Point2};
 
 #[derive(Component, Clone)]
 pub struct SlimeBall {
@@ -27,9 +30,12 @@ impl SpawnSlimeBall {
     ) {
         let rand = time.time_since_startup().as_secs_f32();
         for ev in ev_spawn_slime_ball.iter() {
-
-            let position = ev.position.unwrap_or_else(|| Isometry::translation(0., HALF_HEIGHT * 1.2 / PHYSICS_SCALE));
-            let velocity = ev.velocity.unwrap_or_else(|| Vector::new(rand.sin() * 0.1, -0.1));
+            let position = ev
+                .position
+                .unwrap_or_else(|| Isometry::translation(0., HALF_HEIGHT * 1.2 / PHYSICS_SCALE));
+            let velocity = ev
+                .velocity
+                .unwrap_or_else(|| Vector::new(rand.sin() * 0.1, -0.1));
 
             let mut slime_ball_bundle = slime_ball_bundle.clone();
             slime_ball_bundle.slime_ball.health = ev.health;
@@ -41,7 +47,8 @@ impl SpawnSlimeBall {
                     velocity: RigidBodyVelocity {
                         linvel: velocity,
                         ..Default::default()
-                    }.into(),
+                    }
+                    .into(),
                     ccd: RigidBodyCcd {
                         ccd_enabled: true,
                         ccd_thickness: 0.1,
@@ -129,7 +136,6 @@ impl SlimeBall {
                         if !slime_ball.invincible {
                             if let Ok(rigid_body_position) = q_player.get(other_collider.entity()) {
                                 let magnitude = rigid_body_velocity.linvel.magnitude();
-                                info!("MAGNITUDE: {}", magnitude);
                                 slime_ball.health -= 25;
                                 ev_damaged_player.send(PlayerDamaged {
                                     pos: rigid_body_position.position.translation.vector,
@@ -152,8 +158,17 @@ impl SlimeBall {
     }
 
     pub fn update(
-        mut q_slime_ball: Query<(Entity, &mut SlimeBall, &mut RigidBodyPositionComponent, &RigidBodyVelocityComponent)>, mut ev_despawn_entity: EventWriter<DespawnEntity>) {
-        for (entity, mut slime_ball, mut rigid_body_position, rigid_body_velocity) in q_slime_ball.iter_mut() {
+        mut q_slime_ball: Query<(
+            Entity,
+            &mut SlimeBall,
+            &mut RigidBodyPositionComponent,
+            &RigidBodyVelocityComponent,
+        )>,
+        mut ev_despawn_entity: EventWriter<DespawnEntity>,
+    ) {
+        for (entity, mut slime_ball, mut rigid_body_position, rigid_body_velocity) in
+            q_slime_ball.iter_mut()
+        {
             slime_ball.invincible = false;
             rigid_body_position.position.rotation = Rotation::new(util::full_angle_between(
                 &(rigid_body_velocity
@@ -162,8 +177,10 @@ impl SlimeBall {
                 &Vector2::new(0.0, 1.0),
             ));
 
-            let distance = nalgebra::distance(&rigid_body_position.position.translation.vector.into(), &Point2::new(0., 0.));
-            dbg!(distance);
+            let distance = nalgebra::distance(
+                &rigid_body_position.position.translation.vector.into(),
+                &Point2::new(0., 0.),
+            );
             if distance > HALF_WIDTH / PHYSICS_SCALE {
                 ev_despawn_entity.send(DespawnEntity(entity));
             }
@@ -201,7 +218,10 @@ impl SlimeBallBundle {
                 transform: Transform::from_xyz(0., 0., 6.),
                 ..Default::default()
             },
-            slime_ball: SlimeBall { health: 100, invincible: true },
+            slime_ball: SlimeBall {
+                health: 100,
+                invincible: true,
+            },
             anim_handle: idle_animation.sprite_sheet_animation,
             play: benimator::Play,
         })

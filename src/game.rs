@@ -13,7 +13,7 @@ pub struct Game {
     phase: Phase,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum Phase {
     Start,
     TransIntro,
@@ -21,6 +21,7 @@ pub enum Phase {
     TransDead,
     Dead,
     TransMain,
+    TransMain2,
     Main,
     TransEnd,
     End,
@@ -153,6 +154,7 @@ impl Game {
         mut ev_won: EventReader<Won>,
     ) {
         ev_phase.send(game.phase.clone());
+        dbg!(&game.phase);
         match game.phase {
             Phase::Start => {
                 if key_evr.iter().any(|ev| ev.state == ElementState::Pressed) {
@@ -182,13 +184,16 @@ impl Game {
                 }
             }
             Phase::TransMain => {
+                for mut monster in q_monster.iter_mut() {
+                    monster.phase = crate::monster::Phase::TransShoot;
+                }
+                ev_target_status.send(TargetStatus(true));
+                game.phase = Phase::TransMain2;
+            }
+            Phase::TransMain2 => {
                 if ev_won.iter().next().is_some() {
                     game.phase = Phase::TransEnd;
                 } else {
-                    for mut monster in q_monster.iter_mut() {
-                        monster.phase = crate::monster::Phase::TransShoot;
-                    }
-                    ev_target_status.send(TargetStatus(true));
                     game.phase = Phase::Main;
                 }
             }
