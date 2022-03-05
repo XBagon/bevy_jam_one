@@ -54,6 +54,7 @@ jobs:
         with:
           branch: gh-pages
           folder: wasm
+          clean-exclude: index.html
 
   # Build for Linux
   release-linux:
