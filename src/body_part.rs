@@ -65,5 +65,6 @@ impl BodyPart {
                 _ => {}
             }
         }
+        ev_won.send(game::Won);
     }
 }

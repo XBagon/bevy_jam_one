@@ -1,6 +1,4 @@
-use crate::{
-    nalgebra::Isometry2, Monster, SlimeBall, TargetStatus, HALF_HEIGHT, HALF_WIDTH, PHYSICS_SCALE,
-};
+use crate::{nalgebra::Isometry2, Monster, SlimeBall, TargetStatus, HALF_HEIGHT, HALF_WIDTH, PHYSICS_SCALE, AppState};
 use bevy::{
     input::{keyboard::KeyboardInput, ElementState},
     prelude::*,
@@ -152,6 +150,7 @@ impl Game {
         mut ev_target_status: EventWriter<TargetStatus>,
         mut ev_phase: EventWriter<Phase>,
         mut ev_won: EventReader<Won>,
+        mut state: ResMut<State<AppState>>
     ) {
         ev_phase.send(game.phase.clone());
         match game.phase {
@@ -201,6 +200,9 @@ impl Game {
                 *handle = overlay.memory_overflow_overlay.clone();
                 visibility.is_visible = true;
                 game.phase = Phase::End;
+            }
+            Phase::End => {
+                state.set(AppState::End).unwrap();
             }
             Phase::Egg => {
                 if key_evr.iter().any(|ev| ev.state == ElementState::Pressed) {
