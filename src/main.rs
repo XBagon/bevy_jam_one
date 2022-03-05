@@ -90,8 +90,16 @@ fn main() {
                 .with_system(Score::on_player_damaged.after("SlimeBall::on_contact_started"))
                 .with_system(Player::on_damaged.after("SlimeBall::on_contact_started"))
                 .with_system(Player::on_phase)
-                .with_system(BodyPart::win_check.label("BodyPart::win_check").before("Game::update"))
-                .with_system(Score::on_end.after("BodyPart::win_check").before("Game::update")),
+                .with_system(
+                    BodyPart::win_check
+                        .label("BodyPart::win_check")
+                        .before("Game::update"),
+                )
+                .with_system(
+                    Score::on_end
+                        .after("BodyPart::win_check")
+                        .before("Game::update"),
+                ),
         )
         .add_system_set(
             SystemSet::on_update(AppState::Ready)
@@ -105,10 +113,7 @@ fn main() {
                 .with_system(Monster::animation_finished)
                 .with_system(Game::detect_round_over),
         )
-        .add_system_set(
-            SystemSet::on_update(AppState::End)
-                .with_system(MouseCursor::update)
-        )
+        .add_system_set(SystemSet::on_update(AppState::End).with_system(MouseCursor::update))
         .add_event::<TargetStatus>()
         .add_event::<PlayerDamaged>()
         .add_event::<util::DespawnEntity>()

@@ -35,36 +35,36 @@ impl BodyPart {
         mut ev_won: EventWriter<game::Won>,
     ) {
         for ev in ev_phase.iter() {
-            match ev {
-                game::Phase::TransMain => {
-                    let collider_set = QueryPipelineColliderComponentsSet(&collider_query);
+            if let game::Phase::TransMain = ev {
+                let collider_set = QueryPipelineColliderComponentsSet(&collider_query);
 
-                    let ray = Ray::new(
-                        Point::new(
-                            -HALF_WIDTH / PHYSICS_SCALE,
-                            0.,
-                        ),
-                        Vector2::new(1.0, 0.0),
-                    );
-                    let max_toi = HALF_WIDTH * 2. / PHYSICS_SCALE;
-                    let solid = true;
-                    let groups = InteractionGroups::new(1 << 5, 1 << 3);
-                    let filter = None;
+                let ray = Ray::new(
+                    Point::new(-HALF_WIDTH / PHYSICS_SCALE, 0.),
+                    Vector2::new(1.0, 0.0),
+                );
+                let max_toi = HALF_WIDTH * 2. / PHYSICS_SCALE;
+                let solid = true;
+                let groups = InteractionGroups::new(1 << 5, 1 << 3);
+                let filter = None;
 
-                        query_pipeline.intersections_with_ray(&collider_set, &ray, max_toi, solid, groups, filter, |handle, _|
-                    {
+                query_pipeline.intersections_with_ray(
+                    &collider_set,
+                    &ray,
+                    max_toi,
+                    solid,
+                    groups,
+                    filter,
+                    |handle, _| {
                         if let Ok(rigid_body_velocity) = q_body_part.get(handle.entity()) {
                             if rigid_body_velocity.linvel.magnitude() < 0.1 {
                                 ev_won.send(game::Won);
-                                return false
+                                return false;
                             }
                         }
                         true
-                    });
-                }
-                _ => {}
+                    },
+                );
             }
         }
-        ev_won.send(game::Won);
     }
 }

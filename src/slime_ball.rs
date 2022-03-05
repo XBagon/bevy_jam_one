@@ -93,22 +93,19 @@ impl SlimeBall {
         mut contact_events: EventReader<ContactEvent>,
     ) {
         for contact_event in contact_events.iter() {
-            match contact_event {
-                ContactEvent::Stopped(a, b) => {
-                    let collider_flags =
-                        if let Ok(collider_flags) = q_slime_ball.get_mut(a.entity()) {
-                            Some(collider_flags)
-                        } else if let Ok(collider_flags) = q_slime_ball.get_mut(b.entity()) {
-                            Some(collider_flags)
-                        } else {
-                            None
-                        };
+            if let ContactEvent::Stopped(a, b) = contact_event {
+                let collider_flags =
+                    if let Ok(collider_flags) = q_slime_ball.get_mut(a.entity()) {
+                        Some(collider_flags)
+                    } else if let Ok(collider_flags) = q_slime_ball.get_mut(b.entity()) {
+                        Some(collider_flags)
+                    } else {
+                        None
+                    };
 
-                    if let Some(mut collider_flags) = collider_flags {
-                        collider_flags.solver_groups = InteractionGroups::new(1 << 2, !0);
-                    }
+                if let Some(mut collider_flags) = collider_flags {
+                    collider_flags.solver_groups = InteractionGroups::new(1 << 2, !0);
                 }
-                _ => {}
             }
         }
     }
@@ -121,38 +118,35 @@ impl SlimeBall {
         mut ev_damaged_player: EventWriter<PlayerDamaged>,
     ) {
         for contact_event in contact_events.iter() {
-            match contact_event {
-                ContactEvent::Started(a, b) => {
-                    let info = if let Ok(slime_ball) = q_slime_ball.get_mut(a.entity()) {
-                        Some((b, slime_ball))
-                    } else if let Ok(slime_ball) = q_slime_ball.get_mut(b.entity()) {
-                        Some((a, slime_ball))
-                    } else {
-                        None
-                    };
+            if let ContactEvent::Started(a, b) = contact_event {
+                let info = if let Ok(slime_ball) = q_slime_ball.get_mut(a.entity()) {
+                    Some((b, slime_ball))
+                } else if let Ok(slime_ball) = q_slime_ball.get_mut(b.entity()) {
+                    Some((a, slime_ball))
+                } else {
+                    None
+                };
 
-                    if let Some((other_collider, (entity, mut slime_ball, rigid_body_velocity))) =
-                        info
-                    {
-                        if !slime_ball.invincible {
-                            if let Ok(rigid_body_position) = q_player.get(other_collider.entity()) {
-                                slime_ball.health -= 25;
-                                ev_damaged_player.send(PlayerDamaged {
-                                    pos: rigid_body_position.position.translation.vector,
-                                    vel: rigid_body_velocity.linvel,
-                                    slime_ball_health: slime_ball.health,
-                                })
-                            } else {
-                                slime_ball.health -= 15;
-                            }
+                if let Some((other_collider, (entity, mut slime_ball, rigid_body_velocity))) =
+                    info
+                {
+                    if !slime_ball.invincible {
+                        if let Ok(rigid_body_position) = q_player.get(other_collider.entity()) {
+                            slime_ball.health -= 25;
+                            ev_damaged_player.send(PlayerDamaged {
+                                pos: rigid_body_position.position.translation.vector,
+                                vel: rigid_body_velocity.linvel,
+                                slime_ball_health: slime_ball.health,
+                            })
+                        } else {
+                            slime_ball.health -= 15;
+                        }
 
-                            if slime_ball.health <= 0 {
-                                ev_despawn_entity.send(DespawnEntity(entity));
-                            }
+                        if slime_ball.health <= 0 {
+                            ev_despawn_entity.send(DespawnEntity(entity));
                         }
                     }
                 }
-                _ => {}
             }
         }
     }

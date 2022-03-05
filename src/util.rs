@@ -77,11 +77,12 @@ impl Animation {
 pub struct DespawnEntity(pub Entity);
 
 impl DespawnEntity {
-    pub fn handle_event(
-        mut commands: Commands,
-        mut ev_despawn_entity: EventReader<DespawnEntity>,
-    ) {
-        for DespawnEntity(e) in ev_despawn_entity.iter().collect::<std::collections::BTreeSet<_>>().iter() {
+    pub fn handle_event(mut commands: Commands, mut ev_despawn_entity: EventReader<DespawnEntity>) {
+        for DespawnEntity(e) in ev_despawn_entity
+            .iter()
+            .collect::<std::collections::BTreeSet<_>>()
+            .iter()
+        {
             commands.entity(*e).despawn();
         }
     }

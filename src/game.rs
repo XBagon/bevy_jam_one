@@ -1,4 +1,7 @@
-use crate::{nalgebra::Isometry2, Monster, SlimeBall, TargetStatus, HALF_HEIGHT, HALF_WIDTH, PHYSICS_SCALE, AppState};
+use crate::{
+    nalgebra::Isometry2, AppState, Monster, SlimeBall, TargetStatus, HALF_HEIGHT, HALF_WIDTH,
+    PHYSICS_SCALE,
+};
 use bevy::{
     input::{keyboard::KeyboardInput, ElementState},
     prelude::*,
@@ -141,6 +144,7 @@ impl Game {
         });
     }
 
+
     pub fn update(
         mut game: ResMut<Game>,
         keys: Res<Input<KeyCode>>,
@@ -150,7 +154,7 @@ impl Game {
         mut ev_target_status: EventWriter<TargetStatus>,
         mut ev_phase: EventWriter<Phase>,
         mut ev_won: EventReader<Won>,
-        mut state: ResMut<State<AppState>>
+        mut state: ResMut<State<AppState>>,
     ) {
         ev_phase.send(game.phase.clone());
         match game.phase {

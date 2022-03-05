@@ -92,25 +92,22 @@ impl Player {
         )>,
     ) {
         for ev in ev_phase.iter() {
-            match ev {
-                game::Phase::TransDead => {
-                    info!("Reset Player");
-                    let (
-                        player,
-                        mut rigid_body_position,
-                        mut rigid_body_velocity,
-                        mut texture_atlas,
-                        mut sprite_sheet_animation,
-                    ) = q_player.single_mut();
-                    player
-                        .idle_animation
-                        .apply_animation(&mut texture_atlas, &mut sprite_sheet_animation);
-                    rigid_body_position.position.translation.y = -10.5;
-                    rigid_body_position.position.rotation = Rotation::new(0.);
-                    rigid_body_velocity.linvel = Vector2::repeat(0.);
-                    rigid_body_velocity.angvel = 0.;
-                }
-                _ => {}
+            if let game::Phase::TransDead = ev {
+                info!("Reset Player");
+                let (
+                    player,
+                    mut rigid_body_position,
+                    mut rigid_body_velocity,
+                    mut texture_atlas,
+                    mut sprite_sheet_animation,
+                ) = q_player.single_mut();
+                player
+                    .idle_animation
+                    .apply_animation(&mut texture_atlas, &mut sprite_sheet_animation);
+                rigid_body_position.position.translation.y = -10.5;
+                rigid_body_position.position.rotation = Rotation::new(0.);
+                rigid_body_velocity.linvel = Vector2::repeat(0.);
+                rigid_body_velocity.angvel = 0.;
             }
         }
     }
