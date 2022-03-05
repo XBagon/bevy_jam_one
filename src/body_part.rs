@@ -42,7 +42,7 @@ impl BodyPart {
                     let ray = Ray::new(
                         Point::new(
                             -HALF_WIDTH / PHYSICS_SCALE,
-                            -HALF_HEIGHT / PHYSICS_SCALE + 1.,
+                            0.,
                         ),
                         Vector2::new(1.0, 0.0),
                     );

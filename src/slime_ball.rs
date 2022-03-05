@@ -136,7 +136,6 @@ impl SlimeBall {
                     {
                         if !slime_ball.invincible {
                             if let Ok(rigid_body_position) = q_player.get(other_collider.entity()) {
-                                let magnitude = rigid_body_velocity.linvel.magnitude();
                                 slime_ball.health -= 25;
                                 ev_damaged_player.send(PlayerDamaged {
                                     pos: rigid_body_position.position.translation.vector,
