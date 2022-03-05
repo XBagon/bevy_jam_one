@@ -1,5 +1,5 @@
 use crate::nalgebra::Vector2;
-use crate::{game, HALF_HEIGHT, HALF_WIDTH, PHYSICS_SCALE};
+use crate::{game, HALF_WIDTH, PHYSICS_SCALE};
 use bevy::prelude::*;
 use bevy_ase::asset::AseFileMap;
 use bevy_rapier2d::prelude::*;
@@ -31,7 +31,7 @@ impl BodyPart {
         mut ev_phase: EventReader<game::Phase>,
         query_pipeline: Res<QueryPipeline>,
         collider_query: QueryPipelineColliderComponentsQuery,
-        q_body_part: Query<&RigidBodyActivationComponent, With<BodyPart>>,
+        q_body_part: Query<&RigidBodyVelocityComponent, With<BodyPart>>,
         mut ev_won: EventWriter<game::Won>,
     ) {
         for ev in ev_phase.iter() {
@@ -51,15 +51,16 @@ impl BodyPart {
                     let groups = InteractionGroups::new(1 << 5, 1 << 3);
                     let filter = None;
 
-                    if let Some((handle, _)) =
-                        query_pipeline.cast_ray(&collider_set, &ray, max_toi, solid, groups, filter)
+                        query_pipeline.intersections_with_ray(&collider_set, &ray, max_toi, solid, groups, filter, |handle, _|
                     {
-                        if let Ok(rigid_body_activation) = q_body_part.get(handle.entity()) {
-                            if rigid_body_activation.sleeping {
+                        if let Ok(rigid_body_velocity) = q_body_part.get(handle.entity()) {
+                            if rigid_body_velocity.linvel.magnitude() < 0.1 {
                                 ev_won.send(game::Won);
+                                return false
                             }
                         }
-                    }
+                        true
+                    });
                 }
                 _ => {}
             }

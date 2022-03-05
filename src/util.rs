@@ -73,18 +73,16 @@ impl Animation {
     }
 }
 
+#[derive(Ord, PartialOrd, Eq, PartialEq)]
 pub struct DespawnEntity(pub Entity);
 
 impl DespawnEntity {
     pub fn handle_event(
         mut commands: Commands,
         mut ev_despawn_entity: EventReader<DespawnEntity>,
-        q_entities: Query<Entity>,
     ) {
-        for DespawnEntity(e) in ev_despawn_entity.iter() {
-            if q_entities.get(*e).is_ok() {
-                commands.entity(*e).despawn();
-            }
+        for DespawnEntity(e) in ev_despawn_entity.iter().collect::<std::collections::BTreeSet<_>>().iter() {
+            commands.entity(*e).despawn();
         }
     }
 }
