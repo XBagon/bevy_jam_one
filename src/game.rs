@@ -154,7 +154,6 @@ impl Game {
         mut ev_won: EventReader<Won>,
     ) {
         ev_phase.send(game.phase.clone());
-        dbg!(&game.phase);
         match game.phase {
             Phase::Start => {
                 if key_evr.iter().any(|ev| ev.state == ElementState::Pressed) {

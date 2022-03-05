@@ -55,7 +55,6 @@ impl PlayerDamaged {
                 angle / std::f32::consts::PI * rigid_body_velocity.linvel.magnitude() / 10.;
             //split_power *= split_power;
             let new_health = split_power * ev.slime_ball_health as f32;
-            dbg!(new_health);
             if new_health > 10. {
                 ev_spawn_slime_ball.send(SpawnSlimeBall {
                     position: Some((ev.pos - (ev.vel).normalize() * 2.0).into()),

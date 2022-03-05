@@ -54,11 +54,8 @@ impl BodyPart {
                     if let Some((handle, _)) =
                         query_pipeline.cast_ray(&collider_set, &ray, max_toi, solid, groups, filter)
                     {
-                        dbg!(handle.entity());
                         if let Ok(rigid_body_activation) = q_body_part.get(handle.entity()) {
-                            dbg!(&rigid_body_activation.0);
                             if rigid_body_activation.sleeping {
-                                info!("aaa");
                                 ev_won.send(game::Won);
                             }
                         }

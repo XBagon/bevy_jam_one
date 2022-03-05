@@ -12,6 +12,7 @@ use std::path::Path;
 #[derive(Component, Clone)]
 pub struct SlimeBall {
     pub health: i32,
+    //FIXME: utterly broken
     pub invincible: bool,
 }
 
