@@ -131,6 +131,7 @@ fn main() {
         .run()
 }
 
+#[cfg(not(target_arch = "wasm32"))]
 fn set_window_icon(windows: Res<bevy::winit::WinitWindows>) {
     let primary = windows
         .get_window(bevy::window::WindowId::primary())
@@ -151,6 +152,9 @@ fn set_window_icon(windows: Res<bevy::winit::WinitWindows>) {
 
     primary.set_window_icon(Some(icon));
 }
+
+#[cfg(target_arch = "wasm32")]
+fn set_window_icon(windows: Res<bevy::winit::WinitWindows>) {}
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum AppState {
