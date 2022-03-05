@@ -37,6 +37,13 @@ const HALF_WIDTH: f32 = HALF_HEIGHT * (16. / 9.);
 
 fn main() {
     App::new()
+        .insert_resource(WindowDescriptor {
+            title: String::from("Ad_Opt"),
+            width: 1280.,
+            height: 720.,
+            cursor_visible: false,
+            ..Default::default()
+        })
         .add_plugins(DefaultPlugins)
         .add_plugin(loader::AseLoaderDefaultPlugin)
         .add_plugin(benimator::AnimationPlugin::default())
@@ -48,6 +55,7 @@ fn main() {
             ..Default::default()
         })
         //.add_plugin(WorldInspectorPlugin::new())
+        .add_startup_system(set_window_icon)
         .add_state(AppState::Loading)
         .add_state_to_stage(CoreStage::PostUpdate, AppState::Loading)
         .add_system_set(
@@ -121,6 +129,27 @@ fn main() {
         .add_event::<game::Phase>()
         .add_event::<game::Won>()
         .run()
+}
+
+fn set_window_icon(windows: Res<bevy::winit::WinitWindows>) {
+    let primary = windows
+        .get_window(bevy::window::WindowId::primary())
+        .unwrap();
+
+    // here we use the `image` crate to load our icon data from a png file
+    // this is not a very bevy-native solution, but it will do
+    let (icon_rgba, icon_width, icon_height) = {
+        let image = image::open("assets/icon.ico")
+            .expect("Failed to open icon path")
+            .into_rgba8();
+        let (width, height) = image.dimensions();
+        let rgba = image.into_raw();
+        (rgba, width, height)
+    };
+
+    let icon = winit::window::Icon::from_rgba(icon_rgba, icon_width, icon_height).unwrap();
+
+    primary.set_window_icon(Some(icon));
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]

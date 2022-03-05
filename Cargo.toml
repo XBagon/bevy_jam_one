@@ -10,7 +10,14 @@ bevy = "0.6.1"
 bevy_ase = { git = "https://github.com/B-Reif/bevy_ase", features = ["benimator"] }
 benimator = "2.1"
 bevy_rapier2d = "0.12.1"
+winit = "*"
+image = "*"
+
+[dev-dependencies]
 bevy-inspector-egui = "0.8.2"
+
+[build-dependencies]
+embed-resource = "1.7.0"
 
 [profile.dev]
 opt-level = 1

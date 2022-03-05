@@ -94,14 +94,13 @@ impl SlimeBall {
     ) {
         for contact_event in contact_events.iter() {
             if let ContactEvent::Stopped(a, b) = contact_event {
-                let collider_flags =
-                    if let Ok(collider_flags) = q_slime_ball.get_mut(a.entity()) {
-                        Some(collider_flags)
-                    } else if let Ok(collider_flags) = q_slime_ball.get_mut(b.entity()) {
-                        Some(collider_flags)
-                    } else {
-                        None
-                    };
+                let collider_flags = if let Ok(collider_flags) = q_slime_ball.get_mut(a.entity()) {
+                    Some(collider_flags)
+                } else if let Ok(collider_flags) = q_slime_ball.get_mut(b.entity()) {
+                    Some(collider_flags)
+                } else {
+                    None
+                };
 
                 if let Some(mut collider_flags) = collider_flags {
                     collider_flags.solver_groups = InteractionGroups::new(1 << 2, !0);
@@ -127,8 +126,7 @@ impl SlimeBall {
                     None
                 };
 
-                if let Some((other_collider, (entity, mut slime_ball, rigid_body_velocity))) =
-                    info
+                if let Some((other_collider, (entity, mut slime_ball, rigid_body_velocity))) = info
                 {
                     if !slime_ball.invincible {
                         if let Ok(rigid_body_position) = q_player.get(other_collider.entity()) {

@@ -144,7 +144,6 @@ impl Game {
         });
     }
 
-
     pub fn update(
         mut game: ResMut<Game>,
         keys: Res<Input<KeyCode>>,
